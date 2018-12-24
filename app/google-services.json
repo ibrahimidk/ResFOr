@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "838438324541",
+    "firebase_url": "https://resfor-bb2cb.firebaseio.com",
+    "project_id": "resfor-bb2cb",
+    "storage_bucket": "resfor-bb2cb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:838438324541:android:49ee4a16482fd7ff",
+        "android_client_info": {
+          "package_name": "com.example.ibrahim.resfor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "838438324541-g92fh79905r8hr753dlk409soe9n3uec.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQlY1ARP6oD7lSkfgRX9gyRHQWWCrJizw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
