@@ -12,7 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-import com.example.ibrahim.resfor.MainActivity;
+
 import com.example.ibrahim.resfor.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -123,7 +123,8 @@ public class SignupActivity extends AppCompatActivity {
                                                 rootRef.child("Users").child(userID).child("phone").setValue(phone);
                                                 rootRef.child("Users").child(userID).child("password").setValue(password);
                                                 rootRef.child("Users").child(userID).child("type").setValue(type);
-                                                startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                                                auth.signOut();
+                                                //startActivity(new Intent(SignupActivity.this, MainActivity.class));
                                                 finish();
                                             }else{
                                                 Toast.makeText(SignupActivity.this, "Error", Toast.LENGTH_SHORT).show();
