@@ -20,10 +20,23 @@
             android:layout_height="@dimen/logo_w_h"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="30dp"
-            android:src="@mipmap/ic_launcher"
             android:contentDescription=""
+            android:src="@mipmap/ic_launcher"
             tools:ignore="ContentDescription" />
 
+
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:hint="@string/hint_name"
+            android:imeActionId="@+id/login"
+            android:imeOptions="actionUnspecified"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            tools:ignore="InvalidImeActionId" />
 
         <EditText
             android:id="@+id/email"
@@ -33,8 +46,6 @@
             android:inputType="textEmailAddress"
             android:maxLines="1"
             android:textColor="@android:color/white" />
-
-
 
 
         <EditText
@@ -50,6 +61,46 @@
             android:textColor="@android:color/white"
             tools:ignore="InvalidImeActionId" />
 
+        <EditText
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:hint="@string/hint_phone"
+            android:imeActionId="@+id/login"
+            android:imeOptions="actionUnspecified"
+            android:inputType="phone"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            tools:ignore="InvalidImeActionId" />
+
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+    <RadioButton
+        android:id="@+id/Client"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="  Client"
+        android:checked="true"
+        />
+            <RadioButton
+                android:id="@+id/Restaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="  Restaurant"
+
+
+                />
+
+
+        </RadioGroup>
 
         <Button
             android:id="@+id/sign_up_button"
@@ -62,15 +113,6 @@
             android:textColor="@android:color/black"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btn_reset_password"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
-            android:background="@null"
-            android:text="@string/btn_forgot_password"
-            android:textAllCaps="false"
-            android:textColor="@color/colorAccent" />
 
         <!-- Link to Login Screen -->
 

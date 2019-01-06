@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.example.ibrahim.resfor.MainActivity;
@@ -21,8 +22,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class SignupActivity extends AppCompatActivity {
-    private EditText inputEmail, inputPassword;
-    private Button btnSignIn, btnSignUp, btnResetPassword;
+    private EditText inputEmail, inputPassword,inputName,inputPhone;
+    private RadioButton client,rest;
+    private Button btnSignIn, btnSignUp;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
     private DatabaseReference rootRef;
@@ -40,14 +42,11 @@ public class SignupActivity extends AppCompatActivity {
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        btnResetPassword = (Button) findViewById(R.id.btn_reset_password);
+        inputName=findViewById(R.id.name);
+        inputPhone=findViewById(R.id.phone);
+        client=findViewById(R.id.Client);
+        rest=findViewById(R.id.Restaurant);
 
-        btnResetPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(SignupActivity.this, ResetPasswordActivity.class));
-            }
-        });
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,8 +59,17 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final String email = inputEmail.getText().toString().trim();
-                String password = inputPassword.getText().toString().trim();
+                final String email = inputEmail.getText().toString();
+                final String password = inputPassword.getText().toString();
+                final String name=inputName.getText().toString();
+                final String phone=inputPhone.getText().toString();
+                final String type;
+
+
+                if(TextUtils.isEmpty(name)){
+                    Toast.makeText(getApplicationContext(), "Enter your fucking name!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
@@ -78,6 +86,19 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
+                if(TextUtils.isEmpty(phone)){
+                    Toast.makeText(getApplicationContext(), "Enter phone number!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(client.isChecked()){
+                    type="Client";
+                }
+                else {
+                    type="Restaurant";
+                }
+
+
                 progressBar.setVisibility(View.VISIBLE);
                 //create user
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
@@ -89,8 +110,7 @@ public class SignupActivity extends AppCompatActivity {
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
-                                    Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
-                                            Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(), Toast.LENGTH_SHORT).show();
                                 } else {
                                     final String userID = auth.getCurrentUser().getUid();
                                     rootRef.child("Users").child(userID).setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -99,6 +119,10 @@ public class SignupActivity extends AppCompatActivity {
                                             if (task.isSuccessful()){
                                                 rootRef.child("Users").child(userID).child("email").setValue(email);
                                                 rootRef.child("Users").child(userID).child("email").orderByValue();
+                                                rootRef.child("Users").child(userID).child("name").setValue(name);
+                                                rootRef.child("Users").child(userID).child("phone").setValue(phone);
+                                                rootRef.child("Users").child(userID).child("password").setValue(password);
+                                                rootRef.child("Users").child(userID).child("type").setValue(type);
                                                 startActivity(new Intent(SignupActivity.this, MainActivity.class));
                                                 finish();
                                             }else{
