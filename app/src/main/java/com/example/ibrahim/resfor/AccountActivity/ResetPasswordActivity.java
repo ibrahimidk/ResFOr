@@ -35,7 +35,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         auth = FirebaseAuth.getInstance();
-
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,6 +54,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 }
 
                 progressBar.setVisibility(View.VISIBLE);
+               // Toast.makeText(ResetPasswordActivity.this,auth.getCurrentUser(), Toast.LENGTH_LONG).show();
                 auth.sendPasswordResetEmail(email)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override

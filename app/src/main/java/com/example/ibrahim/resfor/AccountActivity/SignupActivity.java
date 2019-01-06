@@ -17,18 +17,22 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignupActivity extends AppCompatActivity {
     private EditText inputEmail, inputPassword;
     private Button btnSignIn, btnSignUp, btnResetPassword;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
+    private DatabaseReference rootRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         //Get Firebase auth instance
+        rootRef= FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
 
         btnSignIn = (Button) findViewById(R.id.sign_in_button);
@@ -56,7 +60,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String email = inputEmail.getText().toString().trim();
+                final String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
 
                 if (TextUtils.isEmpty(email)) {
@@ -76,8 +80,7 @@ public class SignupActivity extends AppCompatActivity {
 
                 progressBar.setVisibility(View.VISIBLE);
                 //create user
-                auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
+                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 Toast.makeText(SignupActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
@@ -89,8 +92,20 @@ public class SignupActivity extends AppCompatActivity {
                                     Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
                                             Toast.LENGTH_SHORT).show();
                                 } else {
-                                    startActivity(new Intent(SignupActivity.this, MainActivity.class));
-                                    finish();
+                                    final String userID = auth.getCurrentUser().getUid();
+                                    rootRef.child("Users").child(userID).setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()){
+                                                rootRef.child("Users").child(userID).child("email").setValue(email);
+                                                rootRef.child("Users").child(userID).child("email").orderByValue();
+                                                startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                                                finish();
+                                            }else{
+                                                Toast.makeText(SignupActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
                                 }
                             }
                         });
