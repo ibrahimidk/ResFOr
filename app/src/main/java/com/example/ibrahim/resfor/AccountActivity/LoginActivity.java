@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.ibrahim.resfor.Restaurant.RestaurantActivity;
 import com.example.ibrahim.resfor.Users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,6 +40,35 @@ public class LoginActivity extends AppCompatActivity {
     private DataSnapshot data;
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        auth = FirebaseAuth.getInstance();
+        rootRef= FirebaseDatabase.getInstance().getReference();
+       /* if (auth.getCurrentUser() != null) {
+            final String userID = auth.getCurrentUser().getUid();
+            rootRef.child("Users").child(userID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(TextUtils.equals(dataSnapshot.child("type").getValue().toString(),"Restaurant")){
+                        startActivity(new Intent(LoginActivity.this, RestaurantActivity.class));
+                        finish();
+                    }else{
+                        startActivity(new Intent(LoginActivity.this, ClientActivity.class));
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            //startActivity(new Intent(LoginActivity.this, ClientActivity.class));
+            //finish();
+        }*/
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -47,12 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         rootRef= FirebaseDatabase.getInstance().getReference();
 
 
-        if (auth.getCurrentUser() != null) {
-            final String userID = auth.getCurrentUser().getUid();
-       
-            //startActivity(new Intent(LoginActivity.this, ClientActivity.class));
-            //finish();
-        }
+
 
         setContentView(R.layout.activity_login);
         inputEmail = (EditText) findViewById(R.id.email);
@@ -64,6 +89,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,9 +140,27 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
+                                    final String userID = auth.getCurrentUser().getUid();
+                                    rootRef.child("Users").child(userID).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if(TextUtils.equals(dataSnapshot.child("type").getValue().toString(),"Restaurant")){
+                                                startActivity(new Intent(LoginActivity.this, RestaurantActivity.class));
+                                                finish();
+                                            }else{
+                                                startActivity(new Intent(LoginActivity.this, ClientActivity.class));
+                                                finish();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
                                    // Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                    // startActivity(intent);
-                                    finish();
+                               
                                 }
                             }
                         });
