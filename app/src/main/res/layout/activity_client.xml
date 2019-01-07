@@ -6,4 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".Client.ClientActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_main"
+            android:text="Welcome, Which restaurant you like to order from."
+            android:gravity="center"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"/>
+
+    </LinearLayout>
+
+
 </android.support.constraint.ConstraintLayout>

@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (auth.getCurrentUser() != null) {
             final String userID = auth.getCurrentUser().getUid();
-       
+
             //startActivity(new Intent(LoginActivity.this, ClientActivity.class));
             //finish();
         }
