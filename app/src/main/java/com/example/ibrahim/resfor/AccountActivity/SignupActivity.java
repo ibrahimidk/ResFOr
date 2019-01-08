@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+
 public class SignupActivity extends AppCompatActivity {
     private EditText inputEmail, inputPassword,inputName,inputPhone;
     private RadioButton client,rest;
@@ -123,6 +125,16 @@ public class SignupActivity extends AppCompatActivity {
                                                 rootRef.child("Users").child(userID).child("phone").setValue(phone);
                                                 rootRef.child("Users").child(userID).child("password").setValue(password);
                                                 rootRef.child("Users").child(userID).child("type").setValue(type);
+                                                /*if(type.equals("Restaurant")){
+                                                    DatabaseReference menuItemKey = rootRef.child("Users").child(userID).child("menu").push();
+                                                    HashMap menuMap=new HashMap();
+                                                    final String itemKey = menuItemKey.getKey();
+                                                    menuMap.put("name","name");
+                                                    menuMap.put("price","price");
+                                                    menuMap.put("image","image");
+                                                    menuMap.put("description","description");
+                                                    rootRef.child("Users").child(userID).child("menu").child(itemKey).updateChildren(menuMap);
+                                                }*/
                                                 auth.signOut();
                                                 //startActivity(new Intent(SignupActivity.this, MainActivity.class));
                                                 finish();

@@ -17,12 +17,12 @@
             android:textSize="18sp"/>
 
         <TextView
-            android:id="@+id/RestaurantPhone"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Restaurant Phone Number"
-            android:layout_weight="1"
-            android:textSize="18sp"/>
+        android:id="@+id/RestaurantPhone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Restaurant Phone Number"
+        android:layout_weight="1"
+        android:textSize="18sp"/>
 
     </LinearLayout>
 </LinearLayout>

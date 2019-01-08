@@ -31,6 +31,7 @@ public class RestaurantAdapter extends ArrayAdapter<RestaurantList> {
         TextView name=view.findViewById(R.id.RestaurantName);
         TextView phone =view.findViewById(R.id.RestaurantPhone);
 
+
         RestaurantList restaurant= restaurantLists.get(position);
 
         name.setText(restaurant.getName());
