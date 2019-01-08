@@ -10,30 +10,19 @@
 
         <TextView
             android:id="@+id/RestaurantName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Restaurant name" />
+            android:text="Restaurant name"
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/RestaurantPhone"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:text="Restaurant Phone Number"
             android:layout_weight="1"
-            android:text="Restaurant Phone Number" />
+            android:textSize="18sp"/>
 
-        <Button
-            android:id="@+id/order_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Order" />
-
-        <Button
-            android:id="@+id/menu_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="menu" />
     </LinearLayout>
 </LinearLayout>

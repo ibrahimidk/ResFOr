@@ -8,12 +8,15 @@ public class Users {
     private String password;
     private String type;
 
-    public Users(/*String name, String phone, String email, String password, String type*/) {
-        /*this.name = name;
+    public Users(){
+
+    }
+    public Users(String name, String phone, String email, String password, String type) {
+        this.name = name;
         this.phone = phone;
         this.email = email;
         this.password = password;
-        this.type = type;*/
+        this.type = type;
     }
 
 

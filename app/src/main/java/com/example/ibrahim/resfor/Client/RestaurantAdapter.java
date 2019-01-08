@@ -30,8 +30,6 @@ public class RestaurantAdapter extends ArrayAdapter<RestaurantList> {
 
         TextView name=view.findViewById(R.id.RestaurantName);
         TextView phone =view.findViewById(R.id.RestaurantPhone);
-        Button order_btn=view.findViewById(R.id.order_btn);
-        Button menu_btn=view.findViewById(R.id.menu_btn);
 
         RestaurantList restaurant= restaurantLists.get(position);
 
