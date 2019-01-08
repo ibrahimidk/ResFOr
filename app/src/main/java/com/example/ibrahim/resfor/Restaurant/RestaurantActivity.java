@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.ibrahim.resfor.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,12 @@ public class RestaurantActivity extends AppCompatActivity {
 private ListView listView;
 private ListView menuList;
 private mainList[] objects;
+List<menuItem> menuItemList;
 private Button btnBack,btnAdd;
 List<mainList> list;
+    private FirebaseAuth auth;
+    private DatabaseReference rootRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +64,13 @@ List<mainList> list;
                 listView.setVisibility(View.VISIBLE);
                 btnAdd.setVisibility(View.GONE);
                 btnBack.setVisibility(View.GONE);
+            }
+        });
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 
