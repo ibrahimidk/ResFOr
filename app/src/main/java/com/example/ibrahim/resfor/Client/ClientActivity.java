@@ -10,12 +10,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibrahim.resfor.AccountActivity.LoginActivity;
 import com.example.ibrahim.resfor.R;
+import com.example.ibrahim.resfor.Restaurant.menuAdapter;
+import com.example.ibrahim.resfor.Restaurant.menuItem;
 import com.example.ibrahim.resfor.Users;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -30,10 +33,11 @@ import java.util.List;
 public class ClientActivity extends AppCompatActivity {
 
 
-    List<RestaurantList> restaurantLists;
-    ListView RestaurantListView;
+    ListView ListView1,cartList;
+    Button back_btn,cart_btn;
     RestaurantAdapter restaurantAdapter;
-
+    menuAdapter menuadapter;
+    boolean inmenu=false;
 
 
 
@@ -44,32 +48,87 @@ public class ClientActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
-        RestaurantListView=findViewById(R.id.RestaurantList);
+        ListView1=findViewById(R.id.RestaurantList);
 
+        cartList=findViewById(R.id.cart);
         auth = FirebaseAuth.getInstance();
         rootRef= FirebaseDatabase.getInstance().getReference();
+        back_btn=findViewById(R.id.BackBtn);
+        cart_btn=findViewById(R.id.cartBtn);
+
         rootRef.child("Users").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(final DataSnapshot dataSnapshot) {
 
                 final List<RestaurantList> users = new ArrayList<>();
-                for(DataSnapshot user:dataSnapshot.getChildren()){
-                    RestaurantList us = user.getValue(RestaurantList.class);
-                    if(TextUtils.equals(us.getType(),"Restaurant")){
-                        users.add(us);
-
+                final List<String> id = new ArrayList<>();
+                for(DataSnapshot data:dataSnapshot.getChildren()){
+                    RestaurantList user = data.getValue(RestaurantList.class);
+                    if(TextUtils.equals(user.getType(),"Restaurant")){
+                        users.add(user);
+                        id.add(data.getKey());
                     }
                 }
+                if(inmenu){
+                    back_btn.setVisibility(View.VISIBLE);
+                    cart_btn.setVisibility(View.VISIBLE);
+                    cartList.setVisibility(View.VISIBLE);
+
+                }
                 restaurantAdapter=new RestaurantAdapter(ClientActivity.this,R.layout.restaurant_in_the_client,users);
-                RestaurantListView.setAdapter(restaurantAdapter);
-
-                RestaurantListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                ListView1.setAdapter(restaurantAdapter);
+                back_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                        Toast.makeText(ClientActivity.this, users.get(i).getEmail(), Toast.LENGTH_SHORT).show();
+                    public void onClick(View view) {
+                        restaurantAdapter=new RestaurantAdapter(ClientActivity.this,R.layout.restaurant_in_the_client,users);
+                        ListView1.setAdapter(restaurantAdapter);
+                        back_btn.setVisibility(View.GONE);
+                        cart_btn.setVisibility(View.GONE);
+                        cartList.setVisibility(View.GONE);
+                        inmenu=false;
                     }
                 });
+                final List<menuItem> carts = new ArrayList<>();
+                    ListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+
+                            if(!inmenu) {
+                                carts.clear();
+                                rootRef.child("Users").child(id.get(i)).child("menu").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    final List<menuItem> menuList = new ArrayList<>();
+                                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                        menuItem mi = data.getValue(menuItem.class);
+                                        menuList.add(mi);
+                                    }
+                                    menuadapter = new menuAdapter(ClientActivity.this, R.layout.menu_list_row, menuList);
+                                    ListView1.setAdapter(menuadapter);
+                                    inmenu = true;
+                                    back_btn.setVisibility(View.VISIBLE);
+                                    cart_btn.setVisibility(View.VISIBLE);
+                                    cartList.setVisibility(View.VISIBLE);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                            }else{
+                                menuItem mi = ((menuItem) adapterView.getItemAtPosition(i));
+                                carts.add(mi);
+                                Log.d(">>>", "onItemClick: "+mi);
+                            }
+                            menuadapter = new menuAdapter(ClientActivity.this, R.layout.menu_list_row, carts);
+                            cartList.setAdapter(menuadapter);
+                        }
+                    });
+
+
+
             }
 
             @Override

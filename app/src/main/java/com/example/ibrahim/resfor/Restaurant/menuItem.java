@@ -1,12 +1,18 @@
 package com.example.ibrahim.resfor.Restaurant;
 
 public class menuItem  {
-    private String Name,Description,price;
+    private String Name,Description,price,image;
 
-    public menuItem(String name, String description, String price) {
+    public menuItem(){}
+    public menuItem(String name, String description, String price,String image) {
         Name = name;
         Description = description;
         this.price = price;
+        this.image=image;
+    }
+
+    public String getImage() {
+        return image;
     }
 
     public String getName() {

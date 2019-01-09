@@ -6,16 +6,59 @@
     android:layout_height="match_parent"
     tools:context=".Client.ClientActivity">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+                <Button
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="right"
+                    android:background="@drawable/ic_back"
+                    android:padding="5dp"
+                    android:id="@+id/BackBtn"
+                    android:visibility="gone"
+                    />
+            </LinearLayout>
+
+
+
+            <Button
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_menu"
+                android:padding="5dp"
+                android:id="@+id/cartBtn"
+                android:visibility="gone"
+                />
+
+
+        </LinearLayout>
 
         <ListView
             android:id="@+id/RestaurantList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
+
+        <ListView
+            android:id="@+id/cart"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="gone"
             />
 
     </LinearLayout>

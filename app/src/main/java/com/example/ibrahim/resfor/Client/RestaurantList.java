@@ -1,5 +1,11 @@
 package com.example.ibrahim.resfor.Client;
 
+
+import com.example.ibrahim.resfor.Restaurant.menuItem;
+
+import java.util.HashMap;
+import java.util.List;
+
 public class RestaurantList {
     private String name;
     private String phone;
@@ -17,6 +23,8 @@ public class RestaurantList {
         this.password = password;
         this.type = type;
 }
+
+
 
     public void setName(String name) {
         this.name = name;
