@@ -34,6 +34,7 @@ public class ClientActivity extends AppCompatActivity {
 
 
     ListView ListView1,cartList;
+    TextView ordertxt;
     Button back_btn,cart_btn;
     RestaurantAdapter restaurantAdapter;
     menuAdapter menuadapter;
@@ -55,6 +56,7 @@ public class ClientActivity extends AppCompatActivity {
         rootRef= FirebaseDatabase.getInstance().getReference();
         back_btn=findViewById(R.id.BackBtn);
         cart_btn=findViewById(R.id.cartBtn);
+        ordertxt=findViewById(R.id.ordertxt);
 
         rootRef.child("Users").addValueEventListener(new ValueEventListener() {
             @Override
@@ -73,7 +75,7 @@ public class ClientActivity extends AppCompatActivity {
                     back_btn.setVisibility(View.VISIBLE);
                     cart_btn.setVisibility(View.VISIBLE);
                     cartList.setVisibility(View.VISIBLE);
-
+                    ordertxt.setVisibility(View.VISIBLE);
                 }
                 restaurantAdapter=new RestaurantAdapter(ClientActivity.this,R.layout.restaurant_in_the_client,users);
                 ListView1.setAdapter(restaurantAdapter);
@@ -85,18 +87,19 @@ public class ClientActivity extends AppCompatActivity {
                         back_btn.setVisibility(View.GONE);
                         cart_btn.setVisibility(View.GONE);
                         cartList.setVisibility(View.GONE);
+                        ordertxt.setVisibility(View.GONE);
                         inmenu=false;
                     }
                 });
                 final List<menuItem> carts = new ArrayList<>();
-                    ListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
 
-                            if(!inmenu) {
-                                carts.clear();
-                                rootRef.child("Users").child(id.get(i)).child("menu").addValueEventListener(new ValueEventListener() {
+                        if(!inmenu) {
+                            carts.clear();
+                            rootRef.child("Users").child(id.get(i)).child("menu").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     final List<menuItem> menuList = new ArrayList<>();
@@ -110,6 +113,7 @@ public class ClientActivity extends AppCompatActivity {
                                     back_btn.setVisibility(View.VISIBLE);
                                     cart_btn.setVisibility(View.VISIBLE);
                                     cartList.setVisibility(View.VISIBLE);
+                                    ordertxt.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
@@ -117,19 +121,25 @@ public class ClientActivity extends AppCompatActivity {
 
                                 }
                             });
-                            }else{
-                                menuItem mi = ((menuItem) adapterView.getItemAtPosition(i));
-                                carts.add(mi);
-                                Log.d(">>>", "onItemClick: "+mi);
-                            }
-                            menuadapter = new menuAdapter(ClientActivity.this, R.layout.menu_list_row, carts);
-                            cartList.setAdapter(menuadapter);
+                        }else{
+                            menuItem mi = ((menuItem) adapterView.getItemAtPosition(i));
+                            carts.add(mi);
+                            Log.d(">>>", "onItemClick: "+mi);
                         }
-                    });
-
-
-
+                        menuadapter = new menuAdapter(ClientActivity.this, R.layout.menu_list_row, carts);
+                        cartList.setAdapter(menuadapter);
+                        cartList.setSelection(menuadapter.getCount()-1);
+                    }
+                });
+                cartList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        carts.remove(i);
+                        menuadapter.notifyDataSetChanged();
+                    }
+                });
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
