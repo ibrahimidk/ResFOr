@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -33,10 +34,11 @@ public class WelcomeActivity extends AppCompatActivity {
         rootRef= FirebaseDatabase.getInstance().getReference();
         if (auth.getCurrentUser() != null) {
             final String userID = auth.getCurrentUser().getUid();
-            rootRef.child("Users").child(userID).addValueEventListener(new ValueEventListener() {
+            rootRef.child("Users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if(TextUtils.equals(dataSnapshot.child("type").getValue().toString(),"Restaurant")){
+                        Log.d(">>>>>>>", "onDataChange: ");
                         startActivity(new Intent(WelcomeActivity.this, RestaurantActivity.class));
                         finish();
                     }else{
@@ -50,6 +52,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
                 }
             });
+
             //startActivity(new Intent(LoginActivity.this, ClientActivity.class));
             //finish();
         }else{
