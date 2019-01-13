@@ -132,14 +132,15 @@ public class AddItemActivity extends AppCompatActivity {
         if(selectedImageUri != null) {
 
 
-            StorageReference childRef = storageRef.child(userID).child(itemKey+".jpg");
+            final StorageReference childRef = storageRef.child(userID).child(itemKey+".jpg");
             childRef.putFile(selectedImageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
                         Toast.makeText(AddItemActivity.this, "Profile image uploaded successfully", Toast.LENGTH_SHORT).show();
                         //get the link of the profile image from the storage and store the link in the database
-                        final String downloadUri = task.getResult().getMetadata().getReference().getDownloadUrl().toString();
+                      //  Log.d(">>>>", "onComplete: " + task.getResult().getStorage().getDownloadUrl().toString());
+                        final String downloadUri = task.getResult().getUploadSessionUri().toString();
                         rootRef.child("Users").child(userID).child("menu").child(itemKey).child("image").setValue(downloadUri)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -149,13 +150,12 @@ public class AddItemActivity extends AppCompatActivity {
                                             // pick=false;
                                         } else {
                                             // userName.setVisibility(View.VISIBLE);
-                                            Toast.makeText(AddItemActivity.this, "Please update your profile ", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
                     } else {
-                        String message = task.getException().toString();
-                        Toast.makeText(AddItemActivity.this, "Error : " + message, Toast.LENGTH_SHORT).show();
+                       /* String message = task.getException().toString();
+                        Toast.makeText(AddItemActivity.this, "Error : " + message, Toast.LENGTH_SHORT).show();*/
                     }
                 }
             });
