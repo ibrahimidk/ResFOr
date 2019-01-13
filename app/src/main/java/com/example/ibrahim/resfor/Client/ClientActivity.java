@@ -1,5 +1,6 @@
 package com.example.ibrahim.resfor.Client;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -35,10 +36,10 @@ public class ClientActivity extends AppCompatActivity {
 
     ListView ListView1,cartList;
     TextView ordertxt;
-    Button back_btn,cart_btn;
+    Button back_btn,cart_btn,send_order_btn;
     RestaurantAdapter restaurantAdapter;
     menuAdapter menuadapter;
-    boolean inmenu=false;
+    boolean inmenu=false,in_the_cart_list=false;
 
 
 
@@ -57,6 +58,7 @@ public class ClientActivity extends AppCompatActivity {
         back_btn=findViewById(R.id.BackBtn);
         cart_btn=findViewById(R.id.cartBtn);
         ordertxt=findViewById(R.id.ordertxt);
+        send_order_btn=findViewById(R.id.send_order_btn);
 
         rootRef.child("Users").addValueEventListener(new ValueEventListener() {
             @Override
@@ -65,6 +67,7 @@ public class ClientActivity extends AppCompatActivity {
                 final List<RestaurantList> users = new ArrayList<>();
                 final List<String> id = new ArrayList<>();
                 for(DataSnapshot data:dataSnapshot.getChildren()){
+                    Log.d(">>>", "onDataChange: "+data.getValue());
                     RestaurantList user = data.getValue(RestaurantList.class);
                     if(TextUtils.equals(user.getType(),"Restaurant")){
                         users.add(user);
@@ -82,16 +85,42 @@ public class ClientActivity extends AppCompatActivity {
                 back_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        restaurantAdapter=new RestaurantAdapter(ClientActivity.this,R.layout.restaurant_in_the_client,users);
-                        ListView1.setAdapter(restaurantAdapter);
-                        back_btn.setVisibility(View.GONE);
-                        cart_btn.setVisibility(View.GONE);
-                        cartList.setVisibility(View.GONE);
-                        ordertxt.setVisibility(View.GONE);
-                        inmenu=false;
+                        if(!in_the_cart_list) {
+                            restaurantAdapter = new RestaurantAdapter(ClientActivity.this, R.layout.restaurant_in_the_client, users);
+                            ListView1.setAdapter(restaurantAdapter);
+                            back_btn.setVisibility(View.GONE);
+                            cart_btn.setVisibility(View.GONE);
+                            cartList.setVisibility(View.GONE);
+                            ordertxt.setVisibility(View.GONE);
+                            send_order_btn.setVisibility(View.GONE);
+                            inmenu = false;
+
+                        }else{
+                            ListView1.setVisibility(View.VISIBLE);
+                            in_the_cart_list=false;
+                        }
                     }
                 });
                 final List<menuItem> carts = new ArrayList<>();
+
+                cart_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(cartList.getCount()!=0) {
+                            in_the_cart_list = true;
+                            ListView1.setVisibility(View.GONE);
+                            send_order_btn.setVisibility(View.VISIBLE);
+                        }else {
+                            Toast.makeText(ClientActivity.this, "choose your order first fucker", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                send_order_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
                 ListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -124,7 +153,6 @@ public class ClientActivity extends AppCompatActivity {
                         }else{
                             menuItem mi = ((menuItem) adapterView.getItemAtPosition(i));
                             carts.add(mi);
-                            Log.d(">>>", "onItemClick: "+mi);
                         }
                         menuadapter = new menuAdapter(ClientActivity.this, R.layout.menu_list_row, carts);
                         cartList.setAdapter(menuadapter);
@@ -134,8 +162,10 @@ public class ClientActivity extends AppCompatActivity {
                 cartList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        carts.remove(i);
-                        menuadapter.notifyDataSetChanged();
+                        if(!in_the_cart_list) {
+                            carts.remove(i);
+                            menuadapter.notifyDataSetChanged();
+                        }
                     }
                 });
             }
