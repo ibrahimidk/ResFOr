@@ -2,7 +2,9 @@ package com.example.ibrahim.resfor.Client;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -23,12 +25,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibrahim.resfor.AccountActivity.LoginActivity;
 import com.example.ibrahim.resfor.R;
+import com.example.ibrahim.resfor.Restaurant.MenuActivity;
 import com.example.ibrahim.resfor.Restaurant.menuAdapter;
 import com.example.ibrahim.resfor.Restaurant.menuItem;
 import com.example.ibrahim.resfor.Users;
@@ -48,6 +52,7 @@ public class ClientActivity extends AppCompatActivity {
 
     ListView ListView1, cartList;
     TextView ordertxt;
+    String theClientLocation="";
     Button back_btn, cart_btn, send_order_btn;
     RestaurantAdapter restaurantAdapter;
     menuAdapter menuadapter;
@@ -131,35 +136,39 @@ public class ClientActivity extends AppCompatActivity {
                 send_order_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Location location;
-                        String fullAddress="";
-                        locationManager = (LocationManager) ClientActivity.this.getSystemService(LOCATION_SERVICE);
-                        if (ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(ClientActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
-                            return;
-                        }
-                        else{
-                            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                            LocationManager locationManager = (LocationManager) getSystemService(ClientActivity.LOCATION_SERVICE);
-                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        if (TextUtils.isEmpty(theClientLocation)) {
+                            Location location;
+                            locationManager = (LocationManager) ClientActivity.this.getSystemService(LOCATION_SERVICE);
+                            if (ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(ClientActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                                return;
+                            } else {
+                                //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                                LocationManager locationManager = (LocationManager) getSystemService(ClientActivity.LOCATION_SERVICE);
+                                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            }
+
+                            Geocoder geocoder = new Geocoder(ClientActivity.this, Locale.getDefault());
+                            List<Address> addresses = new ArrayList<Address>();
+                            try {
+                                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            } catch (Exception ioException) {
+                                Log.e(">>>>", "Error in getting address for the location");
+                            }
+
+                            if (addresses.size() > 0) {
+                                theClientLocation += addresses.get(0).getThoroughfare() + " " + addresses.get(0).getFeatureName() + " " + addresses.get(0).getLocality();
+                            }
+
+                            //if the address is empty.
+                            else{
+                                AlertDialog diaBox = AskOption();
+                                diaBox.show();
+                            }
                         }
 
-                        Geocoder geocoder = new Geocoder(ClientActivity.this, Locale.getDefault());
-                        List<Address> addresses = new ArrayList<Address>();
-                        try {
-                            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        } catch (Exception ioException) {
-                            Log.e(">>>>", "Error in getting address for the location");
-                        }
+                        Log.d(">>>>1", "onClick: " + theClientLocation);
 
-                        if(addresses.size()>0) {
-                            fullAddress+=addresses.get(0).getThoroughfare()+" "+addresses.get(0).getFeatureName()+" "+addresses.get(0).getLocality();
-                        }
-                        //if the address is empty.
-                        else{
-                            Toast.makeText(ClientActivity.this, "Enter your location or check up if your location is turned on", Toast.LENGTH_SHORT).show();
-
-                        }
                     }
                 });
 
@@ -246,5 +255,50 @@ public class ClientActivity extends AppCompatActivity {
 
 
     /******************/
+    private AlertDialog AskOption()
+    {
+        final EditText input = new EditText(ClientActivity.this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+
+        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
+                //set message, title, and icon
+                .setTitle("Details")
+                .setMessage("insert your location")
+
+
+                .setPositiveButton("Add Location", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+
+                        if(!TextUtils.isEmpty(input.getText().toString())){
+                            theClientLocation=input.getText().toString();
+                        }
+                        else{
+                            Toast.makeText(ClientActivity.this, "Enter the location or turn your location on fucker", Toast.LENGTH_SHORT).show();
+                        }
+                        dialog.dismiss();
+                    }
+
+                })
+
+
+
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                }).setView(input)
+                .create();
+        return myQuittingDialogBox;
+
+    }
+
+
 
 }
