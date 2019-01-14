@@ -71,6 +71,7 @@
         android:padding="5dp"
         android:background="@drawable/list_background"
         />
+
     <Button
         android:id="@+id/send_order_btn"
         android:layout_width="match_parent"
@@ -80,6 +81,7 @@
         android:background="@drawable/list_background"
         android:backgroundTint="@color/colorAccent"
         android:visibility="gone"
+        android:padding="10dp"
         />
 
 

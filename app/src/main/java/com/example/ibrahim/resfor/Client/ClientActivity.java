@@ -2,8 +2,11 @@ package com.example.ibrahim.resfor.Client;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ClientActivity extends AppCompatActivity {
 
@@ -49,7 +54,6 @@ public class ClientActivity extends AppCompatActivity {
     boolean inmenu = false, in_the_cart_list = false;
 
     private LocationManager locationManager;
-    private LocationListener locationListener;
 
 
     private FirebaseAuth auth;
@@ -59,27 +63,6 @@ public class ClientActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
-        locationListener=new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        };
 
         ListView1 = findViewById(R.id.RestaurantList);
 
@@ -98,7 +81,6 @@ public class ClientActivity extends AppCompatActivity {
                 final List<RestaurantList> users = new ArrayList<>();
                 final List<String> id = new ArrayList<>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    Log.d(">>>", "onDataChange: " + data.getValue());
                     RestaurantList user = data.getValue(RestaurantList.class);
                     if (TextUtils.equals(user.getType(), "Restaurant")) {
                         users.add(user);
@@ -149,49 +131,44 @@ public class ClientActivity extends AppCompatActivity {
                 send_order_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Location location;
+                        String fullAddress="";
                         locationManager = (LocationManager) ClientActivity.this.getSystemService(LOCATION_SERVICE);
                         if (ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
                             ActivityCompat.requestPermissions(ClientActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
                             return;
                         }
                         else{
-                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                            LocationManager locationManager = (LocationManager) getSystemService(ClientActivity.LOCATION_SERVICE);
+                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         }
-                        locationListener=new LocationListener() {
-                            @Override
-                            public void onLocationChanged(Location location) {
-                                Log.d(">>>>", "onLocationChanged: "+location);
-                            }
 
-                            @Override
-                            public void onStatusChanged(String s, int i, Bundle bundle) {
+                        Geocoder geocoder = new Geocoder(ClientActivity.this, Locale.getDefault());
+                        List<Address> addresses = new ArrayList<Address>();
+                        try {
+                            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        } catch (Exception ioException) {
+                            Log.e(">>>>", "Error in getting address for the location");
+                        }
 
-                            }
+                        if(addresses.size()>0) {
+                            fullAddress+=addresses.get(0).getThoroughfare()+" "+addresses.get(0).getFeatureName()+" "+addresses.get(0).getLocality();
+                        }
+                        //if the address is empty.
+                        else{
+                            Toast.makeText(ClientActivity.this, "Enter your location or check up if your location is turned on", Toast.LENGTH_SHORT).show();
 
-                            @Override
-                            public void onProviderEnabled(String s) {
-
-                            }
-
-                            @Override
-                            public void onProviderDisabled(String s) {
-
-                            }
-                        };
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
+                        }
                     }
                 });
+
+
+
+
                 ListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
 
 
                         if(!inmenu) {
@@ -212,6 +189,7 @@ public class ClientActivity extends AppCompatActivity {
                                     cartList.setVisibility(View.VISIBLE);
                                     ordertxt.setVisibility(View.VISIBLE);
                                 }
+
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -266,13 +244,7 @@ public class ClientActivity extends AppCompatActivity {
         return  true;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(grantResults.length!=0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            }
-        }
-    }
+
+    /******************/
+
 }
