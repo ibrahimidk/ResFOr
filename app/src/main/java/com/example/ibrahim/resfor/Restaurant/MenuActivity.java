@@ -81,8 +81,7 @@ public class MenuActivity extends AppCompatActivity {
 
         menuList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
-            public boolean onItemLongClick(AdapterView<?> arg0, View v,
-                                           int index, long arg3) {
+            public boolean onItemLongClick(AdapterView<?> arg0, View v, int index, long arg3) {
                 AlertDialog diaBox = AskOption(menuItemList.get(index));
                 diaBox.show();
                 return true;
