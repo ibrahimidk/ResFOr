@@ -36,6 +36,8 @@ import com.example.ibrahim.resfor.Restaurant.MenuActivity;
 import com.example.ibrahim.resfor.Restaurant.menuAdapter;
 import com.example.ibrahim.resfor.Restaurant.menuItem;
 import com.example.ibrahim.resfor.Users;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,12 +46,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 public class ClientActivity extends AppCompatActivity {
 
 
+    int idIndex=0;
     ListView ListView1, cartList;
     TextView ordertxt;
     String theClientLocation="";
@@ -58,11 +62,12 @@ public class ClientActivity extends AppCompatActivity {
     menuAdapter menuadapter;
     boolean inmenu = false, in_the_cart_list = false;
 
+
     private LocationManager locationManager;
 
 
     private FirebaseAuth auth;
-    private DatabaseReference rootRef;
+    private DatabaseReference rootRef,orderRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +79,7 @@ public class ClientActivity extends AppCompatActivity {
         cartList = findViewById(R.id.cart);
         auth = FirebaseAuth.getInstance();
         rootRef = FirebaseDatabase.getInstance().getReference();
+        orderRef = FirebaseDatabase.getInstance().getReference();
         back_btn = findViewById(R.id.BackBtn);
         cart_btn = findViewById(R.id.cartBtn);
         ordertxt = findViewById(R.id.ordertxt);
@@ -82,7 +88,6 @@ public class ClientActivity extends AppCompatActivity {
         rootRef.child("Users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(final DataSnapshot dataSnapshot) {
-
                 final List<RestaurantList> users = new ArrayList<>();
                 final List<String> id = new ArrayList<>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -133,7 +138,7 @@ public class ClientActivity extends AppCompatActivity {
                         }
                     }
                 });
-                send_order_btn.setOnClickListener(new View.OnClickListener() {
+                send_order_btn.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
                         if (TextUtils.isEmpty(theClientLocation)) {
@@ -166,8 +171,29 @@ public class ClientActivity extends AppCompatActivity {
                                 diaBox.show();
                             }
                         }
+                        //push the order to the database
+                        DatabaseReference itemKeyRef=rootRef.child("Users").child(id.get(idIndex)).child("orders").push();
+                        final String itemKey = itemKeyRef.getKey();
+                        orderRef= rootRef.child("Users").child(id.get(idIndex)).child("orders").child(itemKey);
+                        final HashMap order =new HashMap();
+                        rootRef.child("Users").child(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                order.put("name", dataSnapshot.child("name").getValue().toString());
+                                order.put("number", dataSnapshot.child("phone").getValue().toString());
+                                order.put("location", theClientLocation);
+                                order.put("theOrder",carts);
+                                orderRef.updateChildren(order);
+                            }
 
-                        Log.d(">>>>1", "onClick: " + theClientLocation);
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+
 
                     }
                 });
@@ -181,6 +207,7 @@ public class ClientActivity extends AppCompatActivity {
 
 
                         if(!inmenu) {
+                            idIndex=i;
                             carts.clear();
                             rootRef.child("Users").child(id.get(i)).child("menu").addValueEventListener(new ValueEventListener() {
                                 @Override
