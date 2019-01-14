@@ -44,7 +44,7 @@ public class menuAdapter extends ArrayAdapter<menuItem> {
         Des.setText(row.getDescription());
         if( row.getImage()!=null && !TextUtils.equals(row.getImage(),"") && !TextUtils.equals(row.getImage()," ")){
             Picasso.with(context).load(row.getImage()).into(image);
-            Log.d(">>>>", "getView:"+row.getImage() + "ss");
+
         }
 
        /* text.setText(row.getText());
