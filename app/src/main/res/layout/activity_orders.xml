@@ -5,5 +5,97 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Restaurant.OrdersActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+                <Button
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="right"
+                    android:background="@drawable/ic_back"
+                    android:padding="5dp"
+                    android:id="@+id/backBtnOrders"
+                    android:visibility="gone"
+                    />
+            </LinearLayout>
+
+
+
+            <Button
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_add"
+                android:padding="5dp"
+                android:id="@+id/ReceiveBtn"
+                android:visibility="gone"
+                />
+
+
+        </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/orderName"
+        android:text="Name"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:visibility="gone"
+        />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/orderPhone"
+            android:text="Phone"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/orderLocation"
+            android:text="Location"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:visibility="gone"
+
+            />
+
+
+
+
+        <ListView
+            android:id="@+id/ordersList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="8dp" />
+        <ListView
+            android:id="@+id/orderMenuList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="8dp"
+            android:visibility="gone"
+            android:paddingTop="20dp"/>
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
