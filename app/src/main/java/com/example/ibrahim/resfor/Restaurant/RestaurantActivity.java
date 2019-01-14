@@ -5,12 +5,15 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.ibrahim.resfor.AccountActivity.LoginActivity;
 import com.example.ibrahim.resfor.AccountActivity.SignupActivity;
 import com.example.ibrahim.resfor.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -77,6 +80,24 @@ List<mainList> list;
 
 
 
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.settings,menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //item is used to access the position of an option
+        super.onOptionsItemSelected(item);
+        if(item.getItemId() == R.id.sign_out_btn){
+            auth.signOut();
+            startActivity(new Intent(this,LoginActivity.class));
+            finish();
+        }
+
+        return  true;
     }
 
 

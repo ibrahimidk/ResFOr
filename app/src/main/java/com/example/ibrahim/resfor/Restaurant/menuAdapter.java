@@ -1,6 +1,8 @@
 package com.example.ibrahim.resfor.Restaurant;
 
 import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ibrahim.resfor.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -34,10 +37,15 @@ public class menuAdapter extends ArrayAdapter<menuItem> {
         TextView price =view.findViewById(R.id.foodPrice);
         TextView Des=view.findViewById(R.id.foodDescription);
         final menuItem row=objects.get(position);
+       // https://firebasestorage.googleapis.com/v0/b/resfor-bb2cb.appspot.com/o/VfFhIIerUAeCWyg2MUSieGtcKKH2%2F-LW70e5UULLVzEV5VIjV.jpg?alt=media&token=a1a2f71c-a7ba-49b1-8b3d-2908550e0c94
 
         name.setText(row.getName());
         price.setText(row.getPrice());
         Des.setText(row.getDescription());
+        if( row.getImage()!=null && !TextUtils.equals(row.getImage(),"") && !TextUtils.equals(row.getImage()," ")){
+            Picasso.with(context).load(row.getImage()).into(image);
+            Log.d(">>>>", "getView:"+row.getImage() + "ss");
+        }
 
        /* text.setText(row.getText());
 
