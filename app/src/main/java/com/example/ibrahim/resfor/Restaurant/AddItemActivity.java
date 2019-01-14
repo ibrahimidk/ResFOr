@@ -128,7 +128,7 @@ public class AddItemActivity extends AppCompatActivity {
         });
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://resfor-bb2cb.appspot.com");
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference("uploads");
         if(selectedImageUri != null) {
 
 
@@ -140,20 +140,28 @@ public class AddItemActivity extends AppCompatActivity {
                         Toast.makeText(AddItemActivity.this, "Profile image uploaded successfully", Toast.LENGTH_SHORT).show();
                         //get the link of the profile image from the storage and store the link in the database
                       //  Log.d(">>>>", "onComplete: " + task.getResult().getStorage().getDownloadUrl().toString());
-                        final String downloadUri = task.getResult().getDownloadUrl().toString();
-                     //   Log.d(">>>", "onComplete: "+downloadUri);
-                        rootRef.child("Users").child(userID).child("menu").child(itemKey).child("image").setValue(downloadUri)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(AddItemActivity.this, "Image saved in the database", Toast.LENGTH_SHORT).show();
-                                            // pick=false;
-                                        } else {
-                                            // userName.setVisibility(View.VISIBLE);
-                                        }
-                                    }
-                                });
+                       // final String downloadUri = task.getResult().getMetadata().getReference().getDownloadUrl().toString();
+                       // Log.d(">>>", "onComplete: "+downloadUri);
+                        task.getResult().getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                  Log.d(">>>>", "onComplete: " + uri);
+                                final String downloadUri = uri.toString();
+                                rootRef.child("Users").child(userID).child("menu").child(itemKey).child("image").setValue(downloadUri)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Toast.makeText(AddItemActivity.this, "Image saved in the database", Toast.LENGTH_SHORT).show();
+                                                    // pick=false;
+                                                } else {
+                                                    // userName.setVisibility(View.VISIBLE);
+                                                }
+                                            }
+                                        });
+                            }
+                        });
+
                     } else {
                         String message = task.getException().toString();
                         Toast.makeText(AddItemActivity.this, "Error : " + message, Toast.LENGTH_SHORT).show();
