@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Restaurant name"
-            android:textSize="18sp"/>
+            android:textSize="30dp"/>
 
         <TextView
         android:id="@+id/RestaurantPhone"
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:text="Restaurant Phone Number"
         android:layout_weight="1"
-        android:textSize="18sp"/>
+        android:textSize="30dp"/>
 
     </LinearLayout>
 </LinearLayout>
