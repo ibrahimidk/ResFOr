@@ -12,6 +12,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -50,13 +52,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class ClientActivity extends AppCompatActivity {
+public class ClientActivity extends AppCompatActivity implements LocationListener{
 
 
-    int idIndex=0;
+    int idIndex = 0;
     ListView ListView1, cartList;
     TextView ordertxt;
-    String theClientLocation="";
+    String theClientLocation = "";
     Button back_btn, cart_btn, send_order_btn;
     RestaurantAdapter restaurantAdapter;
     menuAdapter menuadapter;
@@ -67,12 +69,13 @@ public class ClientActivity extends AppCompatActivity {
 
 
     private FirebaseAuth auth;
-    private DatabaseReference rootRef,orderRef;
+    private DatabaseReference rootRef, orderRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         ListView1 = findViewById(R.id.RestaurantList);
 
@@ -129,85 +132,76 @@ public class ClientActivity extends AppCompatActivity {
                 cart_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
                         if (cartList.getCount() != 0) {
-                            in_the_cart_list = true;
+                            /*in_the_cart_list = true;
                             ListView1.setVisibility(View.GONE);
-                            send_order_btn.setVisibility(View.VISIBLE);
-                        } else {
-                            Toast.makeText(ClientActivity.this, "choose your order first fucker", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                send_order_btn.setOnClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View view) {
-                        if (TextUtils.isEmpty(theClientLocation)) {
-                            Location location;
-                            locationManager = (LocationManager) ClientActivity.this.getSystemService(LOCATION_SERVICE);
-                            if (ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                ActivityCompat.requestPermissions(ClientActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-                                return;
-                            } else {
-                                //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                                LocationManager locationManager = (LocationManager) getSystemService(ClientActivity.LOCATION_SERVICE);
-                                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            send_order_btn.setVisibility(View.VISIBLE);*/
+                            if (ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                            {
+                                ActivityCompat.requestPermissions(ClientActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
                             }
-
-                            Geocoder geocoder = new Geocoder(ClientActivity.this, Locale.getDefault());
-                            List<Address> addresses = new ArrayList<Address>();
-                            try {
-                                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                            } catch (Exception ioException) {
-                                Log.e(">>>>", "Error in getting address for the location");
+                            else if(isPermissionToReadGPSLocationOK()) {
+                                trackLocation(view);
+                                in_the_cart_list = true;
+                                ListView1.setVisibility(View.GONE);
+                                send_order_btn.setVisibility(View.VISIBLE);
                             }
-
-                            if (addresses.size() > 0) {
-                                theClientLocation += addresses.get(0).getThoroughfare() + " " + addresses.get(0).getFeatureName() + " " + addresses.get(0).getLocality();
-                            }
-
-                            //if the address is empty.
                             else{
                                 AlertDialog diaBox = AskOption();
                                 diaBox.show();
+
                             }
+                        } else {
+                            Toast.makeText(ClientActivity.this, "choose your order first", Toast.LENGTH_SHORT).show();
                         }
+                        Log.d(">>>>", "onClick: "+theClientLocation);
+                    }
+                });
+                send_order_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
                         //push the order to the database
-                        DatabaseReference itemKeyRef=rootRef.child("Users").child(id.get(idIndex)).child("orders").push();
+                        DatabaseReference itemKeyRef = rootRef.child("Users").child(id.get(idIndex)).child("orders").push();
                         final String itemKey = itemKeyRef.getKey();
-                        orderRef= rootRef.child("Users").child(id.get(idIndex)).child("orders").child(itemKey);
-                        final HashMap order =new HashMap();
+                        orderRef = rootRef.child("Users").child(id.get(idIndex)).child("orders").child(itemKey);
+                        final HashMap order = new HashMap();
                         rootRef.child("Users").child(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 order.put("name", dataSnapshot.child("name").getValue().toString());
                                 order.put("number", dataSnapshot.child("phone").getValue().toString());
                                 order.put("location", theClientLocation);
-                                order.put("theOrder",carts);
+                                order.put("theOrder", carts);
                                 orderRef.updateChildren(order);
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
                             }
                         });
+                        carts.clear();
 
-
+                        ListView1.setVisibility(View.VISIBLE);
+                        back_btn.setVisibility(View.GONE);
+                        cart_btn.setVisibility(View.GONE);
+                        cartList.setVisibility(View.GONE);
+                        ordertxt.setVisibility(View.GONE);
+                        send_order_btn.setVisibility(View.GONE);
+                        inmenu = false;
+                        in_the_cart_list = false;
 
 
                     }
                 });
 
 
-
-
                 ListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
-
-
-                        if(!inmenu) {
-                            idIndex=i;
+                        if (!inmenu) {
+                            idIndex = i;
                             carts.clear();
                             rootRef.child("Users").child(id.get(i)).child("menu").addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -232,19 +226,19 @@ public class ClientActivity extends AppCompatActivity {
 
                                 }
                             });
-                        }else{
+                        } else {
                             menuItem mi = ((menuItem) adapterView.getItemAtPosition(i));
                             carts.add(mi);
                         }
                         menuadapter = new menuAdapter(ClientActivity.this, R.layout.menu_list_row, carts);
                         cartList.setAdapter(menuadapter);
-                        cartList.setSelection(menuadapter.getCount()-1);
+                        cartList.setSelection(menuadapter.getCount() - 1);
                     }
                 });
                 cartList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        if(!in_the_cart_list) {
+                        if (!in_the_cart_list) {
                             carts.remove(i);
                             menuadapter.notifyDataSetChanged();
                         }
@@ -261,36 +255,34 @@ public class ClientActivity extends AppCompatActivity {
     }
 
 
-
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.settings,menu);
+        getMenuInflater().inflate(R.menu.settings, menu);
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         //item is used to access the position of an option
         super.onOptionsItemSelected(item);
-        if(item.getItemId() == R.id.sign_out_btn){
+        if (item.getItemId() == R.id.sign_out_btn) {
             auth.signOut();
-            startActivity(new Intent(this,LoginActivity.class));
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
         }
 
-        return  true;
+        return true;
     }
 
 
     /******************/
-    private AlertDialog AskOption()
-    {
+    private AlertDialog AskOption() {
         final EditText input = new EditText(ClientActivity.this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
 
-        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
+        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(this)
                 //set message, title, and icon
                 .setTitle("Details")
                 .setMessage("insert your location")
@@ -301,17 +293,18 @@ public class ClientActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
 
-                        if(!TextUtils.isEmpty(input.getText().toString())){
-                            theClientLocation=input.getText().toString();
-                        }
-                        else{
-                            Toast.makeText(ClientActivity.this, "Enter the location or turn your location on fucker", Toast.LENGTH_SHORT).show();
+                        if (!TextUtils.isEmpty(input.getText().toString())) {
+                            theClientLocation = input.getText().toString();
+                            in_the_cart_list = true;
+                            ListView1.setVisibility(View.GONE);
+                            send_order_btn.setVisibility(View.VISIBLE);
+                        } else {
+                            Toast.makeText(ClientActivity.this, "Enter the location or turn your location on ", Toast.LENGTH_SHORT).show();
                         }
                         dialog.dismiss();
                     }
 
                 })
-
 
 
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -324,6 +317,103 @@ public class ClientActivity extends AppCompatActivity {
                 .create();
         return myQuittingDialogBox;
 
+    }
+
+
+    ///// getting the location
+    public void trackLocation(View view) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(ClientActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+        }
+        if (isPermissionToReadGPSLocationOK()) {
+            // display Last Known Location
+
+            showLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+            // start track GPS location as soon as possible or location changed
+            long minTime = 0;       // minimum time interval between location updates, in milliseconds
+            float minDistance = 0;  // minimum distance between location updates, in meters
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance,ClientActivity.this);
+
+        }
+        else
+        {
+            Toast.makeText(this, "NO GPS or Location Permission!", Toast.LENGTH_SHORT).show();
+            theClientLocation="";
+        }
+
+
+
+    }
+
+    private boolean isPermissionToReadGPSLocationOK()
+    {
+        // first, check if GPS Provider is Enabled ?
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
+            // second, check if permission to ACCESS_FINE_LOCATION is granted ?
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            {
+                ActivityCompat.requestPermissions(ClientActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            Toast.makeText(this, "Turn on your location", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+
+
+    public void onLocationChanged(Location location)
+    {
+        // Called when a new location is found by the location provider.
+        showLocation(location);
+    }
+
+    public void onStatusChanged(String s, int i, Bundle bundle)
+    {
+    }
+
+    public void onProviderEnabled(String s)
+    {
+    }
+
+    public void onProviderDisabled(String s)
+    {
+    }
+
+
+    private void showLocation(Location location)
+    {
+        Log.d(">>>>", "showLocation: "+location);
+
+        if (location != null)
+        {
+
+            Geocoder geocoder = new Geocoder(ClientActivity.this, Locale.getDefault());
+            List<Address> addresses = new ArrayList<Address>();
+            try {
+                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            } catch (Exception ioException) {
+                Log.e(">>>>", "Error in getting address for the location");
+            }
+
+            Log.d(">>>>", "showLocation: "+addresses.size());
+            if (addresses.size() > 0) {
+                theClientLocation="";
+                theClientLocation += addresses.get(0).getThoroughfare() + " " + addresses.get(0).getFeatureName() + " " + addresses.get(0).getLocality();
+            }
+        }
+
+        else{
+            AlertDialog diaBox = AskOption();
+            diaBox.show();
+        }
     }
 
 
