@@ -3,8 +3,6 @@ package com.example.ibrahim.resfor.Restaurant;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -44,11 +42,6 @@ public class OrdersActivity extends AppCompatActivity {
     private menuAdapter orderMenuAdapter;
     private boolean itemClicked=false;
     private Button back,recieve;
-    final String CHANNEL_ID="ORDER_RECIEVED";
-    private NotificationManager notificationManager;
-    private boolean newOrder=false;
-    final int ID=1;
-    private int howManyOrders=0;
 
 
     @Override
@@ -74,15 +67,7 @@ public class OrdersActivity extends AppCompatActivity {
 
 
 
-        notificationManager =
-                (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            NotificationChannel notificationChannel =
-                    new NotificationChannel(CHANNEL_ID, "Simple Notification",
-                            NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
+
 
         rootRef.child("Users").child(userID).child("orders").addValueEventListener(new ValueEventListener() {
             @Override
@@ -96,13 +81,10 @@ public class OrdersActivity extends AppCompatActivity {
                     rootRef.child("Users").child(userID).child("orders").child(data.getKey()).child("theOrder").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                             List<menuItem> menuItemList=new ArrayList<>();
-                            howManyOrders=0;
                             for(DataSnapshot data:dataSnapshot.getChildren()){
                                 menuItem orderItems=data.getValue(menuItem.class);
                                 menuItemList.add(orderItems);
-                                howManyOrders++;
                             }
                             item.setOrderList(menuItemList);
                          //   Log.d(">>>", "onDataChange: "+item.getOrderList().get(0).getName());
@@ -110,14 +92,6 @@ public class OrdersActivity extends AppCompatActivity {
                             ordersNamesList.add(item.getName());
                             orderAdapter=new OrderAdapter(OrdersActivity.this,R.layout.order_row,ordersNamesList);
                             ordersList.setAdapter(orderAdapter);
-                            if(newOrder) {
-                                if (howManyOrders > 0) {
-                                    newOrder = false;
-                                    notificate(ID, "New Order Recieved", "You have " + howManyOrders + " orders!");
-                                }
-                            }else{
-                                newOrder = true;
-                            }
 
                         }
 
@@ -180,18 +154,6 @@ public class OrdersActivity extends AppCompatActivity {
              ordersList.setVisibility(View.VISIBLE);
          }
      });
-
-    }
-
-    private void notificate(int id,String title,String Text){
-        Notification notification =
-                new NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_orders)
-                        .setContentTitle(title)
-                        .setContentText(Text)
-                        .build();
-
-        notificationManager.notify(id, notification);
 
     }
 

@@ -46,6 +46,8 @@ List<mainList> list;
 
         Log.d(">>>", "onCreate: ");
 
+        startService(new Intent(this, MyService.class));
+
         rootRef= FirebaseDatabase.getInstance().getReference();
         itemRef= FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
@@ -94,6 +96,7 @@ List<mainList> list;
         super.onOptionsItemSelected(item);
         if(item.getItemId() == R.id.sign_out_btn){
             auth.signOut();
+            Log.d("sotp", "onOptionsItemSelected: ");
             stopService(new Intent(this, MyService.class));
             startActivity(new Intent(this,LoginActivity.class));
             finish();

@@ -30,6 +30,10 @@
         <activity android:name=".Restaurant.OrdersActivity" />
         <activity android:name=".Restaurant.AddItemActivity"
             android:parentActivityName=".Restaurant.MenuActivity"></activity>
+
+
+
+   <service android:name=".MyService"/>
     </application>
 
 </manifest>
