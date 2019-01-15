@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.ibrahim.resfor.AccountActivity.LoginActivity;
 import com.example.ibrahim.resfor.AccountActivity.SignupActivity;
+import com.example.ibrahim.resfor.MyService;
 import com.example.ibrahim.resfor.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -43,7 +44,7 @@ List<mainList> list;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant);
 
-       // Log.d(">>>", "onCreate: ");
+        Log.d(">>>", "onCreate: ");
 
         rootRef= FirebaseDatabase.getInstance().getReference();
         itemRef= FirebaseDatabase.getInstance().getReference();
@@ -93,6 +94,7 @@ List<mainList> list;
         super.onOptionsItemSelected(item);
         if(item.getItemId() == R.id.sign_out_btn){
             auth.signOut();
+            stopService(new Intent(this, MyService.class));
             startActivity(new Intent(this,LoginActivity.class));
             finish();
         }

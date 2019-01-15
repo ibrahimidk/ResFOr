@@ -1,6 +1,14 @@
 package com.example.ibrahim.resfor.Restaurant;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +18,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.ibrahim.resfor.MyService;
 import com.example.ibrahim.resfor.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +44,12 @@ public class OrdersActivity extends AppCompatActivity {
     private menuAdapter orderMenuAdapter;
     private boolean itemClicked=false;
     private Button back,recieve;
+    final String CHANNEL_ID="ORDER_RECIEVED";
+    private NotificationManager notificationManager;
+    private boolean newOrder=false;
+    final int ID=1;
+    private int howManyOrders=0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,21 +73,36 @@ public class OrdersActivity extends AppCompatActivity {
         final String userID = auth.getCurrentUser().getUid();
 
 
+
+        notificationManager =
+                (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationChannel notificationChannel =
+                    new NotificationChannel(CHANNEL_ID, "Simple Notification",
+                            NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
         rootRef.child("Users").child(userID).child("orders").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 orders.clear();
                 ordersNamesList.clear();
                 for(DataSnapshot data:dataSnapshot.getChildren()){
                     final order item=data.getValue(order.class);
+
                     rootRef.child("Users").child(userID).child("orders").child(data.getKey()).child("theOrder").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            List<menuItem> menuItemList=new ArrayList<>();
-                            for(DataSnapshot data:dataSnapshot.getChildren()){
 
+                            List<menuItem> menuItemList=new ArrayList<>();
+                            howManyOrders=0;
+                            for(DataSnapshot data:dataSnapshot.getChildren()){
                                 menuItem orderItems=data.getValue(menuItem.class);
                                 menuItemList.add(orderItems);
+                                howManyOrders++;
                             }
                             item.setOrderList(menuItemList);
                          //   Log.d(">>>", "onDataChange: "+item.getOrderList().get(0).getName());
@@ -80,6 +110,15 @@ public class OrdersActivity extends AppCompatActivity {
                             ordersNamesList.add(item.getName());
                             orderAdapter=new OrderAdapter(OrdersActivity.this,R.layout.order_row,ordersNamesList);
                             ordersList.setAdapter(orderAdapter);
+                            if(newOrder) {
+                                if (howManyOrders > 0) {
+                                    newOrder = false;
+                                    notificate(ID, "New Order Recieved", "You have " + howManyOrders + " orders!");
+                                }
+                            }else{
+                                newOrder = true;
+                            }
+
                         }
 
                         @Override
@@ -105,6 +144,8 @@ public class OrdersActivity extends AppCompatActivity {
      ordersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
          @Override
          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            // startService(new Intent(OrdersActivity.this, MyService.class));
              if(!itemClicked){
                  back.setVisibility(View.VISIBLE);
                  recieve.setVisibility(View.VISIBLE);
@@ -141,4 +182,20 @@ public class OrdersActivity extends AppCompatActivity {
      });
 
     }
+
+    private void notificate(int id,String title,String Text){
+        Notification notification =
+                new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_orders)
+                        .setContentTitle(title)
+                        .setContentText(Text)
+                        .build();
+
+        notificationManager.notify(id, notification);
+
+    }
+
+
+
+
 }
