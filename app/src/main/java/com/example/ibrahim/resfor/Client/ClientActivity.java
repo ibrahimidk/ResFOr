@@ -298,7 +298,6 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                             in_the_cart_list = true;
                             ListView1.setVisibility(View.GONE);
                             send_order_btn.setVisibility(View.VISIBLE);
-                            theClientLocation="";
                         } else {
                             Toast.makeText(ClientActivity.this, "Enter the location or turn your location on ", Toast.LENGTH_SHORT).show();
                             inmenu = true;
