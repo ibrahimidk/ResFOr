@@ -14,6 +14,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,8 +52,40 @@ public class MyService extends Service {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue().toString().equals("Restaurant")){
+                    howManyOrders=0;
                     //montaser..
-                    rootRef.child("Users").child(userID).child("orders").addListenerForSingleValueEvent(new ValueEventListener() {
+                    rootRef.child("Users").child(userID).child("orders").addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            howManyOrders+=1;
+                            notificate(ID,"New Order Recieved","You have "+howManyOrders+" orders!");
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
+
+                    /*addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Log.d("service", "onDataChange: ");
@@ -70,7 +103,7 @@ public class MyService extends Service {
                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
                         }
-                    });
+                    });*/
 
 
                 }else{
@@ -96,6 +129,7 @@ public class MyService extends Service {
                         .setContentTitle(title)
                         .setContentText(Text)
                         .build();
+        startForeground(1,notification);
         notificationManager.notify(id, notification);
 
     }
