@@ -150,7 +150,6 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                             else{
                                 AlertDialog diaBox = AskOption();
                                 diaBox.show();
-
                             }
                         } else {
                             Toast.makeText(ClientActivity.this, "choose your order first", Toast.LENGTH_SHORT).show();
@@ -290,16 +289,24 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
 
                 .setPositiveButton("Add Location", new DialogInterface.OnClickListener() {
 
-                    public void onClick(DialogInterface dialog, int whichButton) {
 
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        theClientLocation="";
 
                         if (!TextUtils.isEmpty(input.getText().toString())) {
                             theClientLocation = input.getText().toString();
                             in_the_cart_list = true;
                             ListView1.setVisibility(View.GONE);
                             send_order_btn.setVisibility(View.VISIBLE);
+                            theClientLocation="";
                         } else {
                             Toast.makeText(ClientActivity.this, "Enter the location or turn your location on ", Toast.LENGTH_SHORT).show();
+                            inmenu = true;
+                            back_btn.setVisibility(View.VISIBLE);
+                            cart_btn.setVisibility(View.VISIBLE);
+                            cartList.setVisibility(View.VISIBLE);
+                            ordertxt.setVisibility(View.VISIBLE);
+
                         }
                         dialog.dismiss();
                     }
@@ -322,12 +329,14 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
 
     ///// getting the location
     public void trackLocation(View view) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
             ActivityCompat.requestPermissions(ClientActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
         }
+
         if (isPermissionToReadGPSLocationOK()) {
             // display Last Known Location
-
             showLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
             // start track GPS location as soon as possible or location changed
             long minTime = 0;       // minimum time interval between location updates, in milliseconds
@@ -390,8 +399,6 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
 
     private void showLocation(Location location)
     {
-        Log.d(">>>>", "showLocation: "+location);
-
         if (location != null)
         {
 
@@ -402,8 +409,6 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
             } catch (Exception ioException) {
                 Log.e(">>>>", "Error in getting address for the location");
             }
-
-            Log.d(">>>>", "showLocation: "+addresses.size());
             if (addresses.size() > 0) {
                 theClientLocation="";
                 theClientLocation += addresses.get(0).getThoroughfare() + " " + addresses.get(0).getFeatureName() + " " + addresses.get(0).getLocality();
