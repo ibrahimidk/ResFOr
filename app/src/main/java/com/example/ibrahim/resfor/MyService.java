@@ -84,30 +84,6 @@ public class MyService extends Service {
                         }
                     });
 
-
-
-
-                    /*addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Log.d("service", "onDataChange: ");
-                            howManyOrders=0;
-                            for(DataSnapshot data:dataSnapshot.getChildren()){
-                                howManyOrders++;
-                            }
-                            if(howManyOrders>0){
-                                newOrder=false;
-                                notificate(ID,"New Order Recieved","You have "+howManyOrders+" orders!");
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });*/
-
-
                 }else{
                     //ibrahim..
                 }
@@ -121,7 +97,7 @@ public class MyService extends Service {
 
 
 
-        return START_STICKY;
+        return super.onStartCommand(intent,flags,startId);
     }
 
     private void notificate(int id,String title,String Text){
@@ -135,6 +111,9 @@ public class MyService extends Service {
                         .setContentTitle(title)
                         .setContentText(Text)
                         .setContentIntent(pendingIntent)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .setOngoing(true)
                         .build();
         startForeground(1,notification);
         notificationManager.notify(id, notification);

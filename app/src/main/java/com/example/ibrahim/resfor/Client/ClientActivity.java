@@ -166,6 +166,7 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                         final String itemKey = itemKeyRef.getKey();
                         orderRef = rootRef.child("Users").child(id.get(idIndex)).child("orders").child(itemKey);
                         final HashMap order = new HashMap();
+                        final HashMap myOrder=new HashMap();
                         rootRef.child("Users").child(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -175,6 +176,8 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                                 order.put("location", theClientLocation);
                                 order.put("theOrder", carts);
                                 orderRef.updateChildren(order);
+                                myOrder.put("orderID",itemKey);
+                                rootRef.child("Users").child(auth.getCurrentUser().getUid()).child("myOrders").updateChildren(myOrder);
                                 carts.clear();
                             }
 
