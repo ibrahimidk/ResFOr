@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -24,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
 
 public class SignupActivity extends AppCompatActivity {
-    private EditText inputEmail, inputPassword,inputName,inputPhone;
+    private EditText inputEmail, inputPassword,inputName,inputPhone,restaurant_location;
     private RadioButton client,rest;
     private Button btnSignIn, btnSignUp;
     private ProgressBar progressBar;
@@ -39,15 +40,26 @@ public class SignupActivity extends AppCompatActivity {
         rootRef= FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
 
-        btnSignIn = (Button) findViewById(R.id.sign_in_button);
-        btnSignUp = (Button) findViewById(R.id.sign_up_button);
-        inputEmail = (EditText) findViewById(R.id.email);
-        inputPassword = (EditText) findViewById(R.id.password);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        btnSignIn =  findViewById(R.id.sign_in_button);
+        btnSignUp = findViewById(R.id.sign_up_button);
+        inputEmail = findViewById(R.id.email);
+        inputPassword =  findViewById(R.id.password);
+        progressBar =  findViewById(R.id.progressBar);
         inputName=findViewById(R.id.name);
         inputPhone=findViewById(R.id.phone);
+        restaurant_location=findViewById(R.id.Restaurant_location);
         client=findViewById(R.id.Client);
         rest=findViewById(R.id.Restaurant);
+
+        rest.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b)
+                restaurant_location.setVisibility(View.VISIBLE);
+                if(!b)
+                restaurant_location.setVisibility(View.GONE);
+            }
+        });
 
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
@@ -66,10 +78,11 @@ public class SignupActivity extends AppCompatActivity {
                 final String name=inputName.getText().toString();
                 final String phone=inputPhone.getText().toString();
                 final String type;
+                final String res_location=restaurant_location.getText().toString();
 
 
                 if(TextUtils.isEmpty(name)){
-                    Toast.makeText(getApplicationContext(), "Enter your fucking name!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Enter your name!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -98,7 +111,12 @@ public class SignupActivity extends AppCompatActivity {
                 }
                 else {
                     type="Restaurant";
+                    if(TextUtils.isEmpty(res_location)){
+                        Toast.makeText(getApplicationContext(), "Enter the restaurant city!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                 }
+
 
 
                 progressBar.setVisibility(View.VISIBLE);
@@ -125,18 +143,10 @@ public class SignupActivity extends AppCompatActivity {
                                                 rootRef.child("Users").child(userID).child("phone").setValue(phone);
                                                 rootRef.child("Users").child(userID).child("password").setValue(password);
                                                 rootRef.child("Users").child(userID).child("type").setValue(type);
-                                                /*if(type.equals("Restaurant")){
-                                                    DatabaseReference menuItemKey = rootRef.child("Users").child(userID).child("menu").push();
-                                                    HashMap menuMap=new HashMap();
-                                                    final String itemKey = menuItemKey.getKey();
-                                                    menuMap.put("name","name");
-                                                    menuMap.put("price","price");
-                                                    menuMap.put("image","image");
-                                                    menuMap.put("description","description");
-                                                    rootRef.child("Users").child(userID).child("menu").child(itemKey).updateChildren(menuMap);
-                                                }*/
+                                                if(type.equals("Restaurant")){
+                                                    rootRef.child("Users").child(userID).child("Restaurant_location").setValue(res_location);
+                                                }
                                                 auth.signOut();
-                                                //startActivity(new Intent(SignupActivity.this, MainActivity.class));
                                                 finish();
                                             }else{
                                                 Toast.makeText(SignupActivity.this, "Error", Toast.LENGTH_SHORT).show();

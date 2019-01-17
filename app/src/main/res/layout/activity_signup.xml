@@ -72,35 +72,52 @@
             android:inputType="phone"
             android:maxLines="1"
             android:textColor="@android:color/white"
-            tools:ignore="InvalidImeActionId" />
+            tools:ignore="InvalidImeActionId"
+            />
+
 
 
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            >
 
 
-    <RadioButton
-        android:id="@+id/Client"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="  Client"
-        android:checked="true"
-        />
+            <RadioButton
+                android:id="@+id/Client"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="  Client"
+                android:checked="true"
+                />
             <RadioButton
                 android:id="@+id/Restaurant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="  Restaurant"
-
-
                 />
 
 
         </RadioGroup>
+
+        <EditText
+            android:id="@+id/Restaurant_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:hint="@string/hint_location"
+            android:imeActionId="@+id/login"
+            android:imeOptions="actionUnspecified"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            tools:ignore="InvalidImeActionId"
+            android:visibility="gone"
+            />
+
 
         <Button
             android:id="@+id/sign_up_button"

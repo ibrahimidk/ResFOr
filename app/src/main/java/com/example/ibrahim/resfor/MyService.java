@@ -4,6 +4,7 @@ package com.example.ibrahim.resfor;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
@@ -13,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.ibrahim.resfor.Restaurant.OrdersActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -123,11 +125,16 @@ public class MyService extends Service {
     }
 
     private void notificate(int id,String title,String Text){
+
+        Intent notificationIntent=new Intent(this,OrdersActivity.class);
+        PendingIntent pendingIntent= PendingIntent.getActivity(this,0,notificationIntent,0);
+
         Notification notification =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_orders)
                         .setContentTitle(title)
                         .setContentText(Text)
+                        .setContentIntent(pendingIntent)
                         .build();
         startForeground(1,notification);
         notificationManager.notify(id, notification);

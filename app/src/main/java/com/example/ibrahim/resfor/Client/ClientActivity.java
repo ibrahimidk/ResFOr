@@ -169,18 +169,19 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                         rootRef.child("Users").child(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                order.put("clientID",auth.getCurrentUser().getUid());
                                 order.put("name", dataSnapshot.child("name").getValue().toString());
                                 order.put("number", dataSnapshot.child("phone").getValue().toString());
                                 order.put("location", theClientLocation);
                                 order.put("theOrder", carts);
                                 orderRef.updateChildren(order);
+                                carts.clear();
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
                             }
                         });
-                        carts.clear();
 
                         ListView1.setVisibility(View.VISIBLE);
                         back_btn.setVisibility(View.GONE);
