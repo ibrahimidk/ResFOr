@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import com.example.ibrahim.resfor.MyService;
 import com.example.ibrahim.resfor.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,11 +39,13 @@ public class OrdersActivity extends AppCompatActivity {
     private DatabaseReference rootRef;
     List<order> orders;
     List<String> ordersNamesList;
+    List<String>keys;
     List<menuItem> orderMenuList;
     private OrderAdapter orderAdapter;
     private menuAdapter orderMenuAdapter;
     private boolean itemClicked=false;
     private Button back,recieve;
+    private int pos;
 
 
     @Override
@@ -63,6 +67,7 @@ public class OrdersActivity extends AppCompatActivity {
         orders=new ArrayList<>();
         orderMenuList=new ArrayList<>();
         ordersNamesList=new ArrayList<>();
+        keys=new ArrayList<>();
         final String userID = auth.getCurrentUser().getUid();
 
 
@@ -72,12 +77,12 @@ public class OrdersActivity extends AppCompatActivity {
         rootRef.child("Users").child(userID).child("orders").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                keys.clear();
                 orders.clear();
                 ordersNamesList.clear();
                 for(DataSnapshot data:dataSnapshot.getChildren()){
                     final order item=data.getValue(order.class);
-
+                    keys.add(data.getKey());
                     rootRef.child("Users").child(userID).child("orders").child(data.getKey()).child("theOrder").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -124,6 +129,7 @@ public class OrdersActivity extends AppCompatActivity {
                  back.setVisibility(View.VISIBLE);
                  recieve.setVisibility(View.VISIBLE);
                  orderMenuList = orders.get(position).getOrderList();
+                 pos=position;
                  orderMenuAdapter = new menuAdapter(OrdersActivity.this, R.layout.menu_list_row, orderMenuList);
                  phoneTxt.setText(orders.get(position).getNumber());
                  phoneTxt.setVisibility(View.VISIBLE);
@@ -144,17 +150,40 @@ public class OrdersActivity extends AppCompatActivity {
      back.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
-             itemClicked=false;
-             back.setVisibility(View.GONE);
-             recieve.setVisibility(View.GONE);
-             phoneTxt.setVisibility(View.GONE);
-             locationTxt.setVisibility(View.GONE);
-             nameTxt.setVisibility(View.GONE);
-             orderMenuListView.setVisibility(View.GONE);
-             ordersList.setVisibility(View.VISIBLE);
+                goBack();
          }
      });
 
+
+     recieve.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             rootRef.child("Users").child(orders.get(pos).getClientID()).child("myOrders").child(keys.get(pos)).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                 @Override
+                 public void onComplete(@NonNull Task<Void> task) {
+
+                 }
+             });
+
+             rootRef.child("Users").child(userID).child("orders").child(keys.get(pos)).removeValue();
+             Log.d("asdsa", "onClick: "+ orders.get(pos).getClientID() + "     "+keys.get(pos));
+             goBack();
+
+         }
+     });
+
+    }
+
+
+    private void goBack(){
+        itemClicked=false;
+        back.setVisibility(View.GONE);
+        recieve.setVisibility(View.GONE);
+        phoneTxt.setVisibility(View.GONE);
+        locationTxt.setVisibility(View.GONE);
+        nameTxt.setVisibility(View.GONE);
+        orderMenuListView.setVisibility(View.GONE);
+        ordersList.setVisibility(View.VISIBLE);
     }
 
 
