@@ -5,9 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
 
     <application
         android:name=".App"
@@ -31,12 +30,14 @@
         </activity>
         <activity android:name=".Restaurant.MenuActivity" />
         <activity android:name=".Restaurant.OrdersActivity" />
-        <activity android:name=".Restaurant.AddItemActivity"
-            android:parentActivityName=".Restaurant.MenuActivity"></activity>
+        <activity
+            android:name=".Restaurant.AddItemActivity"
+            android:parentActivityName=".Restaurant.MenuActivity" />
 
-
-
-   <service android:name=".MyService"/>
+        <service
+            android:name=".MyService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

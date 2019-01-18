@@ -166,7 +166,13 @@ public class OrdersActivity extends AppCompatActivity {
              });
 
              rootRef.child("Users").child(userID).child("orders").child(keys.get(pos)).removeValue();
-             Log.d("asdsa", "onClick: "+ orders.get(pos).getClientID() + "     "+keys.get(pos));
+            // Log.d("asdsa", "onClick: "+ orders.get(pos).getClientID() + "     "+keys.get(pos));
+             if(orders.size()==1){
+                 orders.clear();
+                 ordersNamesList.clear();
+                 keys.clear();
+                 orderMenuList.clear();
+             }
              goBack();
 
          }

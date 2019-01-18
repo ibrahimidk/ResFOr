@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibrahim.resfor.AccountActivity.LoginActivity;
+import com.example.ibrahim.resfor.MyService;
 import com.example.ibrahim.resfor.R;
 import com.example.ibrahim.resfor.Restaurant.MenuActivity;
 import com.example.ibrahim.resfor.Restaurant.menuAdapter;
@@ -51,6 +52,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import static android.support.v4.app.ServiceCompat.stopForeground;
 
 public class ClientActivity extends AppCompatActivity implements LocationListener{
 
@@ -76,6 +79,9 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        startService(new Intent(this, MyService.class));
+
 
         ListView1 = findViewById(R.id.RestaurantList);
 
@@ -177,7 +183,7 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                                 order.put("theOrder", carts);
                                 orderRef.updateChildren(order);
                                 myOrder.put("orderID",itemKey);
-                                rootRef.child("Users").child(auth.getCurrentUser().getUid()).child("myOrders").updateChildren(myOrder);
+                                rootRef.child("Users").child(auth.getCurrentUser().getUid()).child("myOrders").child(itemKey).setValue("");
                                 carts.clear();
                             }
 
@@ -186,6 +192,7 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                             }
                         });
 
+                        startService(new Intent(ClientActivity.this, MyService.class));
                         ListView1.setVisibility(View.VISIBLE);
                         back_btn.setVisibility(View.GONE);
                         cart_btn.setVisibility(View.GONE);
