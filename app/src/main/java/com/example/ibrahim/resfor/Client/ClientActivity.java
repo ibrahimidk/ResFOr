@@ -62,10 +62,12 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
     ListView ListView1, cartList;
     TextView ordertxt;
     String theClientLocation = "";
-    Button back_btn, cart_btn, send_order_btn;
+    Button back_btn, cart_btn, send_order_btn, searchbtn;
     RestaurantAdapter restaurantAdapter;
     menuAdapter menuadapter;
     boolean inmenu = false, in_the_cart_list = false;
+    EditText searchtxt;
+
 
 
     private LocationManager locationManager;
@@ -92,6 +94,10 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
         cart_btn = findViewById(R.id.cartBtn);
         ordertxt = findViewById(R.id.ordertxt);
         send_order_btn = findViewById(R.id.send_order_btn);
+        searchbtn=findViewById(R.id.searchbtn);
+        searchtxt=findViewById(R.id.searchtxt);
+
+
 
         rootRef.child("Users").addValueEventListener(new ValueEventListener() {
             @Override
@@ -100,7 +106,7 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                 final List<String> id = new ArrayList<>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     RestaurantList user = data.getValue(RestaurantList.class);
-                    if (TextUtils.equals(user.getType(), "Restaurant")) {
+                    if (TextUtils.equals(user.getType(), "Restaurant") ) {
                         users.add(user);
                         id.add(data.getKey());
                     }
@@ -113,6 +119,31 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                 }
                 restaurantAdapter = new RestaurantAdapter(ClientActivity.this, R.layout.restaurant_in_the_client, users);
                 ListView1.setAdapter(restaurantAdapter);
+                searchbtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        users.clear();
+                        id.clear();
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            RestaurantList user = data.getValue(RestaurantList.class);
+                            if (TextUtils.equals(user.getType(), "Restaurant") ) {
+                                users.add(user);
+                                id.add(data.getKey());
+                            }
+                        }
+                        if(!TextUtils.isEmpty(searchtxt.getText().toString())) {
+                            for (int i = 0; i < users.size(); i++) {
+                                if (!TextUtils.equals(users.get(i).getRestaurant_location(), searchtxt.getText().toString())) {
+                                    users.remove(i);
+                                    id.remove(i);
+                                    i--;
+                                }
+                            }
+                        }
+                        restaurantAdapter = new RestaurantAdapter(ClientActivity.this, R.layout.restaurant_in_the_client, users);
+                        ListView1.setAdapter(restaurantAdapter);
+                    }
+                });
                 back_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -123,6 +154,8 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                             cart_btn.setVisibility(View.GONE);
                             cartList.setVisibility(View.GONE);
                             ordertxt.setVisibility(View.GONE);
+                            searchtxt.setVisibility(View.VISIBLE);
+                            searchbtn.setVisibility(View.VISIBLE);
                             send_order_btn.setVisibility(View.GONE);
                             inmenu = false;
 
@@ -130,6 +163,7 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                             ListView1.setVisibility(View.VISIBLE);
                             in_the_cart_list = false;
                         }
+
                     }
                 });
                 final List<menuItem> carts = new ArrayList<>();
@@ -139,9 +173,6 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                     public void onClick(View view) {
 
                         if (cartList.getCount() != 0) {
-                            /*in_the_cart_list = true;
-                            ListView1.setVisibility(View.GONE);
-                            send_order_btn.setVisibility(View.VISIBLE);*/
                             if (ActivityCompat.checkSelfPermission(ClientActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                             {
                                 ActivityCompat.requestPermissions(ClientActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
@@ -159,7 +190,6 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                         } else {
                             Toast.makeText(ClientActivity.this, "choose your order first", Toast.LENGTH_SHORT).show();
                         }
-                        Log.d(">>>>", "onClick: "+theClientLocation);
                     }
                 });
                 send_order_btn.setOnClickListener(new View.OnClickListener() {
@@ -185,6 +215,7 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                                 myOrder.put("orderID",itemKey);
                                 rootRef.child("Users").child(auth.getCurrentUser().getUid()).child("myOrders").child(itemKey).setValue("");
                                 carts.clear();
+                                searchtxt.setText("");
                             }
 
                             @Override
@@ -194,6 +225,8 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
 
                         startService(new Intent(ClientActivity.this, MyService.class));
                         ListView1.setVisibility(View.VISIBLE);
+                        searchtxt.setVisibility(View.VISIBLE);
+                        searchbtn.setVisibility(View.VISIBLE);
                         back_btn.setVisibility(View.GONE);
                         cart_btn.setVisibility(View.GONE);
                         cartList.setVisibility(View.GONE);
@@ -211,6 +244,8 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
                         if (!inmenu) {
+                            searchtxt.setVisibility(View.GONE);
+                            searchbtn.setVisibility(View.GONE);
                             idIndex = i;
                             carts.clear();
                             rootRef.child("Users").child(id.get(i)).child("menu").addValueEventListener(new ValueEventListener() {
@@ -275,6 +310,7 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
         //item is used to access the position of an option
         super.onOptionsItemSelected(item);
         if (item.getItemId() == R.id.sign_out_btn) {
+            stopService(new Intent(this, MyService.class));
             auth.signOut();
             startActivity(new Intent(this, LoginActivity.class));
             finish();
@@ -308,6 +344,8 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                             theClientLocation = input.getText().toString();
                             in_the_cart_list = true;
                             ListView1.setVisibility(View.GONE);
+                            searchtxt.setVisibility(View.GONE);
+                            searchbtn.setVisibility(View.GONE);
                             send_order_btn.setVisibility(View.VISIBLE);
                         } else {
                             Toast.makeText(ClientActivity.this, "Enter the location or turn your location on ", Toast.LENGTH_SHORT).show();

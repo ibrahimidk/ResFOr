@@ -67,7 +67,6 @@ public class MenuActivity extends AppCompatActivity {
                     menuItem item=data.getValue(menuItem.class);
                     keys.add(data.getKey());
                     menuItemList.add(item);
-                   // Log.d(">>>", "onDataChange: " +ata.getKey()d);
                 }
                 adapter=new menuAdapter(MenuActivity.this,R.layout.menu_list_row,menuItemList);
                 menuList.setAdapter(adapter);
@@ -111,7 +110,6 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MenuActivity.this,AddItemActivity.class));
-                //finish();
             }
         });
 
@@ -201,7 +199,6 @@ public class MenuActivity extends AppCompatActivity {
                                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
 
                                     snapshot.getRef().removeValue();
-                                    //Log.d(">>>", "onDataChange: "+ snapshot.toString());
                                     Toast.makeText(MenuActivity.this, i.getName()+" removed successfully", Toast.LENGTH_SHORT).show();
                                 }
                             }

@@ -40,7 +40,6 @@ public class WelcomeActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if(TextUtils.equals(dataSnapshot.child("type").getValue().toString(),"Restaurant")){
-                      //  Log.d(">>>>>>>", "onDataChange: ");
                         startActivity(new Intent(WelcomeActivity.this, RestaurantActivity.class));
                         finish();
                     }else{
@@ -55,8 +54,6 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
             });
 
-            //startActivity(new Intent(LoginActivity.this, ClientActivity.class));
-            //finish();
         }else{
             startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
             finish();

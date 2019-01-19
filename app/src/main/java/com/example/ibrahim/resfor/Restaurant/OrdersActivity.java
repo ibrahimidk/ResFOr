@@ -92,7 +92,6 @@ public class OrdersActivity extends AppCompatActivity {
                                 menuItemList.add(orderItems);
                             }
                             item.setOrderList(menuItemList);
-                         //   Log.d(">>>", "onDataChange: "+item.getOrderList().get(0).getName());
                             orders.add(item);
                             ordersNamesList.add(item.getName());
                             orderAdapter=new OrderAdapter(OrdersActivity.this,R.layout.order_row,ordersNamesList);
@@ -105,10 +104,6 @@ public class OrdersActivity extends AppCompatActivity {
 
                         }
                     });
-
-
-                    //Log.d(">>>", "onDataChange: "+item.getOrderList());
-                    // Log.d(">>>", "onDataChange: " +ata.getKey()d);
                 }
 
             }
@@ -124,7 +119,6 @@ public class OrdersActivity extends AppCompatActivity {
          @Override
          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            // startService(new Intent(OrdersActivity.this, MyService.class));
              if(!itemClicked){
                  back.setVisibility(View.VISIBLE);
                  recieve.setVisibility(View.VISIBLE);
@@ -166,7 +160,6 @@ public class OrdersActivity extends AppCompatActivity {
              });
 
              rootRef.child("Users").child(userID).child("orders").child(keys.get(pos)).removeValue();
-            // Log.d("asdsa", "onClick: "+ orders.get(pos).getClientID() + "     "+keys.get(pos));
              if(orders.size()==1){
                  orders.clear();
                  ordersNamesList.clear();

@@ -100,25 +100,15 @@ public class AddItemActivity extends AppCompatActivity {
         itemRef = rootRef.child("Users").child(userID).child("menu");
         HashMap items =new HashMap();
 
-        //StorageReference filePath = userProfileImagesRef.child(currentUserID + ".jpg");
-        //FirebaseStorage storage = FirebaseStorage.getInstance();
-       // StorageReference storageRef = userProfileImagesRef.child;
 
         items.put("name",name);
         items.put("price",price);
         items.put("description",description);
         items.put("image",image);
-      /*  rootRef.child("Users").child(userID).child("menu").child(itemKey).child("name").setValue(name);
-        rootRef.child("Users").child(userID).child("menu").child(itemKey).child("price").setValue(price);
-        rootRef.child("Users").child(userID).child("menu").child(itemKey).child("description").setValue(description);
-        rootRef.child("Users").child(userID).child("menu").child(itemKey).child("image").setValue(image);*/
         rootRef.child("Users").child(userID).child("menu").child(itemKey).updateChildren(items).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
                 if(task.isSuccessful()){
-                    //startActivity(new Intent(AddItemActivity.this, MenuActivity.class));
-
-                   // Toast.makeText(MenuActivity.class, "Item added successfully", Toast.LENGTH_SHORT).show();
                     finish();
                 }else{
                     Toast.makeText(AddItemActivity.this, task.getException().getMessage().toString(), Toast.LENGTH_SHORT).show();
@@ -138,14 +128,9 @@ public class AddItemActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
                         Toast.makeText(AddItemActivity.this, "Profile image uploaded successfully", Toast.LENGTH_SHORT).show();
-                        //get the link of the profile image from the storage and store the link in the database
-                      //  Log.d(">>>>", "onComplete: " + task.getResult().getStorage().getDownloadUrl().toString());
-                       // final String downloadUri = task.getResult().getMetadata().getReference().getDownloadUrl().toString();
-                       // Log.d(">>>", "onComplete: "+downloadUri);
                         task.getResult().getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                  Log.d(">>>>", "onComplete: " + uri);
                                 final String downloadUri = uri.toString();
                                 rootRef.child("Users").child(userID).child("menu").child(itemKey).child("image").setValue(downloadUri)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -153,9 +138,6 @@ public class AddItemActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
                                                     Toast.makeText(AddItemActivity.this, "Image saved in the database", Toast.LENGTH_SHORT).show();
-                                                    // pick=false;
-                                                } else {
-                                                    // userName.setVisibility(View.VISIBLE);
                                                 }
                                             }
                                         });
@@ -182,13 +164,11 @@ public class AddItemActivity extends AppCompatActivity {
 
 
         } else {
-            Log.d(">>>>>", "checkAndroidVersion: ");
             pickImage();
         }
     }
 
     public void pickImage() {
-        //CropImage.startPickImageActivity(this);
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -205,7 +185,6 @@ public class AddItemActivity extends AppCompatActivity {
                 selectedImageUri = Uri.fromFile(f);
 
 
-                Log.d(">>>", "onActivityResult: ");
             }
             image.setImageURI(selectedImageUri);
         }

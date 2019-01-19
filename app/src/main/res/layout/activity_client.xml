@@ -41,6 +41,29 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchLayout"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/searchtxt"
+            android:hint="search city"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            />
+
+        <Button
+            android:id="@+id/searchbtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="search"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
     <ListView
         android:id="@+id/RestaurantList"
         android:layout_width="match_parent"

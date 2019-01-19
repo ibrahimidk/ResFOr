@@ -37,7 +37,6 @@ public class menuAdapter extends ArrayAdapter<menuItem> {
         TextView price =view.findViewById(R.id.foodPrice);
         TextView Des=view.findViewById(R.id.foodDescription);
         final menuItem row=objects.get(position);
-       // https://firebasestorage.googleapis.com/v0/b/resfor-bb2cb.appspot.com/o/VfFhIIerUAeCWyg2MUSieGtcKKH2%2F-LW70e5UULLVzEV5VIjV.jpg?alt=media&token=a1a2f71c-a7ba-49b1-8b3d-2908550e0c94
 
         name.setText(row.getName());
         price.setText(row.getPrice());
@@ -47,14 +46,6 @@ public class menuAdapter extends ArrayAdapter<menuItem> {
 
         }
 
-       /* text.setText(row.getText());
-
-        if(row.getImg()==0){
-            image.setImageResource(R.drawable.ic_orders);
-        }else if(row.getImg()==1){
-            image.setImageResource(R.drawable.ic_menu);
-
-        }*/
 
         return view;
     }

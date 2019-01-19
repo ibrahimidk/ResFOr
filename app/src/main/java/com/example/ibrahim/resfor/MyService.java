@@ -40,8 +40,6 @@ public class MyService extends Service {
         rootRef= FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
         final String userID = auth.getCurrentUser().getUid();
-        //Log.d("ssdd", "onDataChange: ");
-
         notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -58,7 +56,6 @@ public class MyService extends Service {
                 if(dataSnapshot.getValue().toString().equals("Restaurant")){
                     isClient=false;
                     howManyOrders=0;
-                    //montaser..
                     rootRef.child("Users").child(userID).child("orders").addChildEventListener(new ChildEventListener() {
                         @Override
                         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -73,10 +70,7 @@ public class MyService extends Service {
 
                         @Override
                         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot==null) {
                                 howManyOrders -= 1;
-                                notificate(ID,"New Order Recieved","You have "+ 0 +" orders!");
-                            }
                         }
 
                         @Override
@@ -91,7 +85,6 @@ public class MyService extends Service {
                     });
 
                 }else{
-                    //ibrahim..
                     isClient=true;
                     rootRef.child("Users").child(userID).child("myOrders").addChildEventListener(new ChildEventListener() {
                         @Override
@@ -106,7 +99,6 @@ public class MyService extends Service {
                         @Override
                         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                             notificate(ID,"The delivery person arrived","come and take your order!");
-                            //stopService(new Intent(MyService.this, MyService.class));
                         }
 
                         @Override
@@ -164,11 +156,6 @@ public class MyService extends Service {
     {
         super.onDestroy();
         stopForeground(true);
-
-        //stopping the player when service is destroyed
-     /*   player.stop();
-        Log.d("debug","MyService onDestroy()");
-        isRunning = false;*/
     }
 
     @Nullable

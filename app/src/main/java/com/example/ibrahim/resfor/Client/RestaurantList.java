@@ -12,19 +12,22 @@ public class RestaurantList {
     private String email;
     private String password;
     private String type;
+    private String Restaurant_location;
+
 
     public RestaurantList(){
 
     }
-    public RestaurantList(String name, String phone, String email, String password, String type) {
+    public RestaurantList(String name, String phone, String email, String password, String type,String Restaurant_location) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.password = password;
         this.type = type;
+        this.Restaurant_location=Restaurant_location;
 }
 
-
+    public String getRestaurant_location() { return Restaurant_location; }
 
     public void setName(String name) {
         this.name = name;

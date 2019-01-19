@@ -28,13 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class RestaurantActivity extends AppCompatActivity  {
-private ListView listView;
+    private ListView listView;
 
-private mainList[] objects;
+    private mainList[] objects;
 
 
 
-List<mainList> list;
+    List<mainList> list;
 
     private FirebaseAuth auth;
     private DatabaseReference rootRef,itemRef;
@@ -43,20 +43,17 @@ List<mainList> list;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant);
-
-        Log.d(">>>", "onCreate: ");
-
         startService(new Intent(this, MyService.class));
 
         rootRef= FirebaseDatabase.getInstance().getReference();
         itemRef= FirebaseDatabase.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
-        
+
 
         listView=findViewById(R.id.myListView);
 
         objects=new mainList[2];
-       objects[0]=new mainList(0,"Menu");
+        objects[0]=new mainList(0,"Menu");
         objects[1]=new mainList(1,"Orders");
         list=new ArrayList<>();
         list.add(objects[0]);
@@ -69,12 +66,12 @@ List<mainList> list;
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position==0){
-            //menu
+                    //menu
                     startActivity(new Intent(RestaurantActivity.this,MenuActivity.class));
 
 
                 }else if(position==1){
-            //orders
+                    //orders
                     startActivity(new Intent(RestaurantActivity.this,OrdersActivity.class));
 
                 }
@@ -95,9 +92,8 @@ List<mainList> list;
         //item is used to access the position of an option
         super.onOptionsItemSelected(item);
         if(item.getItemId() == R.id.sign_out_btn){
-            auth.signOut();
-            Log.d("sotp", "onOptionsItemSelected: ");
             stopService(new Intent(this, MyService.class));
+            auth.signOut();
             startActivity(new Intent(this,LoginActivity.class));
             finish();
         }

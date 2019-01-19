@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 } else {
                                     final String userID = auth.getCurrentUser().getUid();
-                                    rootRef.child("Users").child(userID).addValueEventListener(new ValueEventListener() {
+                                    rootRef.child("Users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             if(TextUtils.equals(dataSnapshot.child("type").getValue().toString(),"Restaurant")){
