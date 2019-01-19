@@ -80,7 +80,6 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
         setContentView(R.layout.activity_client);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        startService(new Intent(this, MyService.class));
 
 
         ListView1 = findViewById(R.id.RestaurantList);
@@ -166,6 +165,7 @@ public class ClientActivity extends AppCompatActivity implements LocationListene
                 send_order_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        startService(new Intent(ClientActivity.this, MyService.class));
 
                         //push the order to the database
                         DatabaseReference itemKeyRef = rootRef.child("Users").child(id.get(idIndex)).child("orders").push();

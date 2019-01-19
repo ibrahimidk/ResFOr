@@ -73,7 +73,10 @@ public class MyService extends Service {
 
                         @Override
                         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                            if (dataSnapshot==null) {
+                                howManyOrders -= 1;
+                                notificate(ID,"New Order Recieved","You have "+ 0 +" orders!");
+                            }
                         }
 
                         @Override
