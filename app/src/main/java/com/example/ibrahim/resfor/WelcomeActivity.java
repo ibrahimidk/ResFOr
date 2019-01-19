@@ -58,7 +58,5 @@ public class WelcomeActivity extends AppCompatActivity {
             startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
             finish();
         }
-
-        // Start long running operation in a background thread
     }
 }

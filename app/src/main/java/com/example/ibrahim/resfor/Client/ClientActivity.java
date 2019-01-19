@@ -38,7 +38,6 @@ import com.example.ibrahim.resfor.R;
 import com.example.ibrahim.resfor.Restaurant.MenuActivity;
 import com.example.ibrahim.resfor.Restaurant.menuAdapter;
 import com.example.ibrahim.resfor.Restaurant.menuItem;
-import com.example.ibrahim.resfor.Users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
